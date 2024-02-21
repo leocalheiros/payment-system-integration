@@ -11,9 +11,33 @@ services:
 
     ports:
       - "3306:3306"
+    networks:
+      - paymentnetwork
 
     volumes:
       - db_data:/var/lib/mysql
+  app:
+    build:
+      dockerfile: Dockerfile
+      context: ./
+    container_name: paymentsystemapi
+    restart: on-failure
+    depends_on:
+      - db
+    ports:
+      - '8080:8080'
+    networks:
+      - paymentnetwork
+    environment:
+      MYSQL_HOST: db
+      CLIENT_ID: "your_client_id_here"
+      CLIENT_SECRET: "your_client_secret_here"
+      JWT_SECRET: "12345678"
+      MAIL_USER: "your_mail_user_here"
+      MAIL_PASSWORD: "your_mail_password_here"
 
+networks:
+  paymentnetwork:
+    driver: bridge
 volumes:
   db_data:
